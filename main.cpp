@@ -20,7 +20,19 @@ int main() {
         }
     }
 
+    string out_str = "";
     // конвертирование массива битов в строку
-    cout << out_bits;
+    for (int i = str_size; i >= 0; i-=8) {
+        bitset<8> bit_char;
+        int q = 0;
+        for (int j = 7; j >=0; j--) {
+            bit_char[q] = out_bits[i + j];
+            q++;
+        }
+        out_str += char(bit_char.to_ulong());
+    }
+    cout << out_str;
+
+    // 
     return 0;
 }
