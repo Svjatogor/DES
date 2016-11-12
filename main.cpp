@@ -1,6 +1,26 @@
 #include <iostream>
+#include <string>
+#include <bitset>
+
+using namespace std;
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    string input_text = "lol";
+    const size_t str_size = sizeof(input_text); // размер строки
+    bitset<str_size> out_bits;
+
+    // конвертирование строки в массив битов
+    for (int i = 0; i < input_text.length(); ++i) {
+        char c = input_text[i];
+        for (int j = 7; j >= 0 && c; --j) {
+            if (c & 0x1) {
+                out_bits.set(8 * i + j);
+            }
+            c >>= 1;
+        }
+    }
+
+    // конвертирование массива битов в строку
+    cout << out_bits;
     return 0;
 }
