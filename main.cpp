@@ -67,6 +67,7 @@ int main() {
             i = 0;
         }
     }
+
     // conversion data to bits array
     convert_str_to_bitset(input_bits, input_text);
 
@@ -121,14 +122,47 @@ void convert_str_to_bitset(bitset<MAX_SIZE>& bit_str, const string& str) {
 
 bitset<32> feistel_function(const bitset<32>&right_part, const bitset<48> key) {
     bitset<32> result_bits;
+
     // expansion function
     bitset<48> exapns_bits;
     for (int i = 0; i < 48; i++) {
         exapns_bits[i] = right_part[expansion_indexes[i]];
     }
+
     // XOR
     exapns_bits ^= key;
 
+    // S transformation
+    bitset<6> block;
+    int k = 0;
+    int a;
+    int b;
+    int trans_block;
+    vector<bitset<4>> s_trans_blocks;
+    for (int i = 0; i < 48; i += 6) {
+        k = 0;
+        // copy to block
+        for (int j = i; j < i + 6; j++) {
+            block[k] = exapns_bits[j];
+            k++;
+        }
+        // bits for a
+        bitset<2> a_bits;
+        a_bits[0] = block[0];
+        a_bits[1] = block[5];
+        // bits for b
+        bitset<4> b_bits;
+        for (int w = 1; w < 5; w++) {
+            b_bits[w - 1] = block[w];
+        }
+        // generate a and b
+        a = a_bits.to_ulong();
+        b = b_bits.to_ulong();
+        // search b'
+        trans_block = s_transformation_arr[i/6][a][b];
+        bitset<4> s_trans_bits(trans_block);
+        s_trans_blocks.push_back(s_trans_bits);
+    }
 }
 
 vector<std::string> split(const string& input, const string regex) {
