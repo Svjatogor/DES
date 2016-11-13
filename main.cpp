@@ -61,12 +61,11 @@ int main() {
         for (int q = 0; q < b_arr.size(); q++) {
             s_transformation_arr[s_index][i][q] = stoi(b_arr[q]);
         }
-
-        if (i == 3) {
+        i++;
+        if (i == 4) {
             s_index++;
             i = 0;
         }
-        i++;
     }
     // conversion data to bits array
     convert_str_to_bitset(input_bits, input_text);
