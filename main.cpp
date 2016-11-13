@@ -5,6 +5,15 @@
 
 using namespace std;
 
+// initial permutation array
+int init_permutation_array[64] =
+    {
+        58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4,
+        62, 54, 46, 38, 30, 22, 14, 6, 64, 56, 48, 40, 32, 24, 16, 8,
+        57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3,
+        61, 53, 45, 37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7
+    };
+
 void convert_bitset_to_str(string& str, const bitset<MAX_SIZE>& bit_str);
 
 void convert_str_to_bitset(bitset<MAX_SIZE>& bit_str, const string& str);
@@ -19,20 +28,22 @@ int main() {
 
     /* DES algorithm */
     // add empty bits
-    const size_t encrypt_size = 2 * str_size - 64 * ( str_size/64 );
+    const size_t encrypt_size = 2 * str_size - 64 * (str_size / 64);
     bitset<MAX_SIZE> encrypt_bits;
     // copy from input data
-    for (int i = 0; i < encrypt_size; i++) {
+    for (int i = 0; i < encrypt_size; i ++) {
         if (i < str_size) {
             encrypt_bits[i] = input_bits[i];
         } else {
             encrypt_bits[i] = 0;
         }
     }
-    convert_bitset_to_str(input_text, encrypt_bits);
-    cout << input_text;
     // initial permutation
-
+    // make copy for job
+    bitset<MAX_SIZE> origin_bits (encrypt_bits);
+    for (int i = 0; i < encrypt_size; i++) {
+        encrypt_bits[i] = origin_bits[init_permutation_array[i]];
+    }
     return 0;
 }
 
