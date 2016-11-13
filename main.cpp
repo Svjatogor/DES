@@ -33,7 +33,7 @@ int expansion_indexes[48] =
         };
 
 // S transformation array
-int s_transformation_arr[8][3][15] = {};
+int s_transformation_arr[8][4][16] = {};
 
 void convert_bitset_to_str(string& str, const bitset<MAX_SIZE>& bit_str);
 
@@ -51,16 +51,22 @@ int main() {
     ifstream infile("s_transformation");
     if (!infile)
         std::cerr << "Could not open the file!" << std::endl;
+    int s_index = 0;
     int i = 0;
     int j = 0;
     string line;
     std::vector<string> b_arr;
-    string f, e;
     while (getline(infile, line)) {
-        i++;
         b_arr = split(line, "\t");
-        f = b_arr[0];
-        e = b_arr[b_arr.size() - 1];
+        for (int q = 0; q < b_arr.size(); q++) {
+            s_transformation_arr[s_index][i][q] = stoi(b_arr[q]);
+        }
+
+        if (i == 3) {
+            s_index++;
+            i = 0;
+        }
+        i++;
     }
     // conversion data to bits array
     convert_str_to_bitset(input_bits, input_text);
