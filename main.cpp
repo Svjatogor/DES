@@ -36,7 +36,13 @@ int expansion_indexes[48] =
 int s_transformation_arr[8][4][16] = {};
 
 // feistel permutation
-int feistel_permutation_index[32] = {};
+int feistel_permutation_index[32] =
+        {
+                16, 7, 20, 21, 29, 12, 28, 17,
+                1, 15, 23, 26, 5, 18, 31, 10,
+                2, 8, 24, 14, 32, 27, 3, 9,
+                19, 13, 30, 6, 22, 11, 4, 25
+        };
 
 void convert_bitset_to_str(string& str, const bitset<MAX_SIZE>& bit_str);
 
@@ -138,10 +144,11 @@ bitset<32> feistel_function(const bitset<32>&right_part, const bitset<48> key) {
     // S transformation
     bitset<6> block;
     int k = 0;
+    int z = 0;
     int a;
     int b;
     int trans_block;
-    vector<bitset<4>> s_trans_blocks;
+    bitset<32> union_s_blocks;
     for (int i = 0; i < 48; i += 6) {
         k = 0;
         // copy to block
@@ -164,10 +171,21 @@ bitset<32> feistel_function(const bitset<32>&right_part, const bitset<48> key) {
         // search b'
         trans_block = s_transformation_arr[i/6][a][b];
         bitset<4> s_trans_bits(trans_block);
-        s_trans_blocks.push_back(s_trans_bits);
+        k = 0;
+        // copy to union s blocks
+        for (; z < z + 4; z++) {
+            union_s_blocks[z] = s_trans_bits[k];
+            z++;
+            k++;
+        }
     }
-    // permutation
 
+    // permutation
+    bitset<32> origin_union (union_s_blocks);
+    for (int i = 0; i < 32; i++) {
+        union_s_blocks[i] = origin_union[feistel_permutation_index[i]];
+    }
+    return union_s_blocks;
 }
 
 vector<std::string> split(const string& input, const string regex) {
