@@ -44,6 +44,8 @@ int feistel_permutation_index[32] =
                 19, 13, 30, 6, 22, 11, 4, 25
         };
 
+//
+
 void convert_bitset_to_str(string& str, const bitset<MAX_SIZE>& bit_str);
 
 void convert_str_to_bitset(bitset<MAX_SIZE>& bit_str, const string& str);
@@ -51,6 +53,8 @@ void convert_str_to_bitset(bitset<MAX_SIZE>& bit_str, const string& str);
 bitset<32> feistel_function(const bitset<32>&right_part, const bitset<48> key);
 
 vector<string> split(const string& input, const string regex);
+
+bitset<48> generate_key(const bitset<56> key, int i);
 
 int main() {
     string input_text = "fuck";
@@ -197,4 +201,28 @@ vector<std::string> split(const string& input, const string regex) {
     return {first, last};
 }
 
-
+bitset<48> generate_key(const bitset<56> key, int i) {
+    bitset<64> new_key;
+    int unit_count = 0;
+    int j = 0;
+    for (int i = 0; i < 64; i++) {
+        // counting units
+        if (key[i]) {
+            unit_count++;
+        }
+        // odd byte
+        if ((i + 1) % 8 == 0) {
+            unit_count = 0;
+            if (unit_count % 2 == 0) {
+                new_key[i] = 1;
+            }
+            else {
+                new_key[i] = 0;
+            }
+        }
+        else {
+            new_key[i] = key[j];
+            j++;
+        }
+    }
+}
