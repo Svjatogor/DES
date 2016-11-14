@@ -44,7 +44,32 @@ int feistel_permutation_index[32] =
                 19, 13, 30, 6, 22, 11, 4, 25
         };
 
-//
+// C0 for generate key
+int Ci[28] =
+        {
+                57, 49, 41, 33, 25, 17, 9, 1, 58, 50, 42, 34, 26, 18,
+                10, 2, 59, 51, 43, 35, 27, 19, 11, 3, 60, 52, 44, 36
+        };
+
+// D0 for generate key
+int Di[28] =
+        {
+                63, 55, 47, 39, 31, 23, 15, 7, 62, 54, 46, 38, 30, 22,
+                14, 6, 61, 53, 45, 37, 29, 21, 13, 5, 28, 20, 12, 4
+        };
+
+int left_shift_vol[16] =
+        {
+                1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
+        };
+
+// CiDi permutation
+int CiDi[48] =
+        {
+                14, 17, 11, 24, 1, 5, 3, 28, 15, 6, 21, 10, 23, 19, 12, 4,
+                26, 8, 16, 7, 27, 20, 13, 2, 41, 52, 31, 37, 47, 55, 30, 40,
+                51, 45, 33, 48, 44, 49, 39, 56, 34, 53, 46, 42, 50, 36, 29, 32
+        };
 
 void convert_bitset_to_str(string& str, const bitset<MAX_SIZE>& bit_str);
 
@@ -201,28 +226,67 @@ vector<std::string> split(const string& input, const string regex) {
     return {first, last};
 }
 
-bitset<48> generate_key(const bitset<56> key, int i) {
+bitset<48> generate_key(const bitset<56> key, int iter) {
     bitset<64> new_key;
     int unit_count = 0;
     int j = 0;
+
+    // Addition byte
     for (int i = 0; i < 64; i++) {
         // counting units
         if (key[i]) {
-            unit_count++;
+            unit_count ++;
         }
         // odd byte
         if ((i + 1) % 8 == 0) {
             unit_count = 0;
             if (unit_count % 2 == 0) {
                 new_key[i] = 1;
-            }
-            else {
+            } else {
                 new_key[i] = 0;
             }
-        }
-        else {
+        } else {
             new_key[i] = key[j];
-            j++;
+            j ++;
         }
     }
+
+    // Ci, Di generate
+    // cyclic shift to the left
+    int left_part_Ci[2] = {};
+    int left_part_Di[2] = {};
+    for (int i = 0; i < 28; i++) {
+        // save left part
+        for (int j = 0; j < iter; j++) {
+            left_part_Ci[j] = Ci[j];
+            left_part_Di[j] = Di[j];
+        }
+        // left shift
+        for (int j = iter; j < 64; j++) {
+            Ci[j - iter] = Ci[j];
+            Di[j - iter] = Di[j];
+        }
+        // add starts bits
+        for (int j = 0; j < iter; j++) {
+            Ci[28 - iter + j] = left_part_Ci[j];
+            Di[28 - iter + j] = left_part_Di[j];
+        }
+    }
+
+    // Ci, Di permutation
+    bitset<28> Ci_key;
+    bitset<28> Di_key;
+    for (int i = 0; i < 28; i++) {
+        Ci_key[i] = new_key[Ci[i]];
+        Di_key[i] = new_key[Di[i]];
+    }
+
+    // generate 48-bit key
+    bitset<48> result_key;
+    for (int i = 0; i < 48; i+=2) {
+        result_key[i] = Ci_key[CiDi[i]];
+        result_key[i + 1] = Di_key[CiDi[i + 1]];
+    }
+
+    return result_key;
 }
