@@ -35,6 +35,9 @@ int expansion_indexes[48] =
 // S transformation array
 int s_transformation_arr[8][4][16] = {};
 
+// feistel permutation
+int feistel_permutation_index[32] = {};
+
 void convert_bitset_to_str(string& str, const bitset<MAX_SIZE>& bit_str);
 
 void convert_str_to_bitset(bitset<MAX_SIZE>& bit_str, const string& str);
@@ -163,6 +166,8 @@ bitset<32> feistel_function(const bitset<32>&right_part, const bitset<48> key) {
         bitset<4> s_trans_bits(trans_block);
         s_trans_blocks.push_back(s_trans_bits);
     }
+    // permutation
+
 }
 
 vector<std::string> split(const string& input, const string regex) {
